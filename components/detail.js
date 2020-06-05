@@ -1,7 +1,22 @@
 import React, {Component} from 'react';
-import {View, Text, Button, StyleSheet, FlatList} from 'react-native';
+import {
+  View,
+  Text,
+  Button,
+  StyleSheet,
+  FlatList,
+  ScrollView,
+} from 'react-native';
+import {
+  Table,
+  TableWrapper,
+  Row,
+  Rows,
+  Col,
+} from 'react-native-table-component';
 
-class Tracker extends Component {
+
+class Detail extends Component {
   url =
     'https://covidtrackerapi.bsg.ox.ac.uk/api/v2/stringency/date-range/2020-01-02/2020-05-30';
 
@@ -10,7 +25,6 @@ class Tracker extends Component {
       let response = await fetch(this.url);
       let json = await response.json();
       this.setState({json: json.data});
-      console.log(json);
     } catch (error) {
       //обработка ошибки
       throw error;
@@ -20,50 +34,75 @@ class Tracker extends Component {
   state = {
     json: null,
   };
+
   constructor() {
     super();
   }
-  componentDidMount(): void {}
+
   render() {
-    this.getData();
-    let flatData = [];
+    console.log(this);
+    // this.getData();
+    let tableData = [];
     if (this.state.json !== null) {
       let keys = Object.keys(this.state.json);
       keys.forEach(i => {
         let record = this.state.json[i].RUS;
-        flatData.push(record);
+        if (record !== undefined) {
+          tableData.push(record);
+        }
       });
-      console.log(flatData);
+      // console.log(tableData);
     }
+
     return (
       <View style={style.container}>
-        {/*<Button title={'Get covid data'} onPress={() => this.getData()} />*/}
-        <FlatList
-          data={flatData}
-          showsVerticalScrollIndicator={false}
-          renderItem={({item, index}) => (
-            <Text>
-              {item.date_value} ({item.date_value}) {item.confirmed}
-            </Text>
-          )}
-          keyExtractor={i => i.date_value}
-        />
+        <Button title={'PUK'} onPress={() => this.getData()} />
+        <ScrollView horizontal={true}>
+          <View>
+            <Table borderStyle={{borderWidth: 1, borderColor: '#C1C0B9'}}>
+              <Row
+                data={['Date', 'Confirmed', 'Deaths']}
+                widthArr={[125, 125, 125]}
+                style={style.header}
+                textStyle={style.text}
+              />
+            </Table>
+            <ScrollView style={style.dataWrapper}>
+              <Table borderStyle={{borderWidth: 1, borderColor: '#C1C0B9'}}>
+                {tableData.reverse().map((rowData, index) => {
+                  // console.log(rowData);
+                  return (
+                    <Row
+                      key={index}
+                      data={[
+                        rowData.date_value,
+                        rowData.confirmed,
+                        rowData.deaths,
+                      ]}
+                      widthArr={[125, 125, 125]}
+                      style={[
+                        style.row,
+                        index % 2 && {backgroundColor: '#F7F6E7'},
+                      ]}
+                      textStyle={style.text}
+                    />
+                  );
+                })}
+              </Table>
+            </ScrollView>
+          </View>
+        </ScrollView>
       </View>
     );
   }
 }
 
 const style = StyleSheet.create({
-  container: {
-    backgroundColor: 'yellow',
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignContent: 'center',
-  },
-  text: {
-    fontSize: 32,
-  },
+  container: {flex: 1, padding: 16, paddingTop: 30, backgroundColor: '#fff'},
+  header: {height: 50, backgroundColor: '#537791'},
+  text: {textAlign: 'center', fontWeight: '100'},
+  dataWrapper: {marginTop: -1},
+  row: {height: 40, backgroundColor: '#E7E6E1'},
 });
 
-export default Tracker;
+export default Detail;
