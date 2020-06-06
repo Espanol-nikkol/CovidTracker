@@ -5,39 +5,12 @@ import {NavigationContainer} from '@react-navigation/native';
 import Tracker from './components/tracker';
 import Detail from './components/detail';
 import Country from './components/country';
+import LoadData from './components/loadData';
+import RealmDB from './components/realmDB';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 
-const Realm = require('realm');
 const Drawer = createDrawerNavigator();
-const DataSchema = {
-  name: 'Data',
-  properties: {
-    day: {
-      country: {
-        confirmed: 'int',
-        country_code: 'string',
-        date_value: 'string',
-        deaths: 'int',
-        stringency: 'float',
-        stringency_actual: 'float',
-        stringency_legacy: 'float',
-        stringency_legacy_disp: 'float',
-      },
-    },
-  },
-};
-// Realm.open({schema: [CarSchema]}).then(realm => {
-//   realm.write(() => {
-//     const myCar = realm.create('Car', {
-//       make: 'Honda',
-//       model: 'Civic',
-//       miles: 1000,
-//     });
-//     myCar.miles += 20; // Update a property value
-//     console.log('QUERY');
-//     console.log(realm.objects('Car')[0]);
-//   });
-// });
+
 function mainScreenComponent(props) {
   return (
     <View>
@@ -52,22 +25,17 @@ class App extends Component {
   state = {
     json: null,
   };
-  url = 'https://thevirustracker.com/free-api?countryTimeline=US';
-  data = null;
-  async getData() {
-    const requestOptions = {
-      method: 'GET',
-      redirect: 'follow',
-    };
-    let response = await fetch(this.url, this.requestOptions);
-    let json = await response.json();
-    return json;
-  }
+
   render() {
     let tableData = [];
     if (this.state.json === null) {
-      this.getData().then(json => {
-        this.setState({json: json.timelineitems[0]})
+      (async () => {
+        let data = await LoadData.getStats();
+        RealmDB.sendNewDataToBase({
+          id: 'US',
+          data: data,
+        });
+        this.setState({json: JSON.parse(data).timelineitems[0]});
         let keys = Object.keys(this.state.json);
         keys.forEach(i => {
           let record = this.state.json[i];
@@ -76,7 +44,7 @@ class App extends Component {
             tableData.push(record);
           }
         });
-      });
+      })();
     }
     return (
       <NavigationContainer>
