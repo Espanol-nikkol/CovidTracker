@@ -50,11 +50,7 @@ class App extends Component {
       <NavigationContainer>
         <Drawer.Navigator>
           <Drawer.Screen name="main" component={mainScreenComponent} />
-          <Drawer.Screen
-            name="Detail"
-            initialParams={{puk}}
-            component={Detail}
-          />
+          <Drawer.Screen name="Detail" component={Detail} />
           {/*<Drawer.Screen name="Country" component={Country} />*/}
         </Drawer.Navigator>
       </NavigationContainer>
