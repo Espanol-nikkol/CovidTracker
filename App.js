@@ -30,7 +30,7 @@ class App extends Component {
     let tableData = [];
     if (this.state.json === null) {
       (async () => {
-        let data = await LoadData.getStats();
+        let data = await LoadData.getStats('US');
         RealmDB.sendNewDataToBase({
           id: 'US',
           data: data,
