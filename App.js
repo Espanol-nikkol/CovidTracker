@@ -7,8 +7,37 @@ import Detail from './components/detail';
 import Country from './components/country';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 
+const Realm = require('realm');
 const Drawer = createDrawerNavigator();
-
+const DataSchema = {
+  name: 'Data',
+  properties: {
+    day: {
+      country: {
+        confirmed: 'int',
+        country_code: 'string',
+        date_value: 'string',
+        deaths: 'int',
+        stringency: 'float',
+        stringency_actual: 'float',
+        stringency_legacy: 'float',
+        stringency_legacy_disp: 'float',
+      },
+    },
+  },
+};
+// Realm.open({schema: [CarSchema]}).then(realm => {
+//   realm.write(() => {
+//     const myCar = realm.create('Car', {
+//       make: 'Honda',
+//       model: 'Civic',
+//       miles: 1000,
+//     });
+//     myCar.miles += 20; // Update a property value
+//     console.log('QUERY');
+//     console.log(realm.objects('Car')[0]);
+//   });
+// });
 function mainScreenComponent(props) {
   return (
     <View>
@@ -23,40 +52,41 @@ class App extends Component {
   state = {
     json: null,
   };
-  url =
-    'https://covidtrackerapi.bsg.ox.ac.uk/api/v2/stringency/date-range/2020-01-02/2020-05-30';
-
+  url = 'https://thevirustracker.com/free-api?countryTimeline=US';
+  data = null;
   async getData() {
-    try {
-      let response = await fetch(this.url)
-        .then(resp => resp.json())
-        .then(json => this.setState({json: json.data}));
-      // let json = await response.json();
-      // this.setState({json: json.data});
-    } catch (error) {
-      //обработка ошибки
-      throw error;
-    }
+    const requestOptions = {
+      method: 'GET',
+      redirect: 'follow',
+    };
+    let response = await fetch(this.url, this.requestOptions);
+    let json = await response.json();
+    return json;
   }
   render() {
     let tableData = [];
     if (this.state.json === null) {
-      this.getData().then(() => {
+      this.getData().then(json => {
+        this.setState({json: json.timelineitems[0]})
         let keys = Object.keys(this.state.json);
         keys.forEach(i => {
-          let record = this.state.json[i].RUS;
-          if (record !== undefined) {
+          let record = this.state.json[i];
+          if (record !== undefined && typeof record === 'object') {
+            record.date = i;
             tableData.push(record);
           }
         });
       });
     }
-    // console.log(this);
     return (
       <NavigationContainer>
         <Drawer.Navigator>
           <Drawer.Screen name="main" component={mainScreenComponent} />
-          <Drawer.Screen name="Detail" initialParams={{puk}} component={Detail} />
+          <Drawer.Screen
+            name="Detail"
+            initialParams={{puk}}
+            component={Detail}
+          />
           {/*<Drawer.Screen name="Country" component={Country} />*/}
         </Drawer.Navigator>
       </NavigationContainer>
