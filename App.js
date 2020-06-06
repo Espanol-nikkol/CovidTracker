@@ -5,6 +5,8 @@ import {NavigationContainer} from '@react-navigation/native';
 import Tracker from './components/tracker';
 import Detail from './components/detail';
 import Country from './components/country';
+import LoadData from './components/loadData';
+import RealmDB from './components/realmDB';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 
 const Drawer = createDrawerNavigator();
@@ -23,40 +25,36 @@ class App extends Component {
   state = {
     json: null,
   };
-  url =
-    'https://covidtrackerapi.bsg.ox.ac.uk/api/v2/stringency/date-range/2020-01-02/2020-05-30';
 
-  async getData() {
-    try {
-      let response = await fetch(this.url)
-        .then(resp => resp.json())
-        .then(json => this.setState({json: json.data}));
-      // let json = await response.json();
-      // this.setState({json: json.data});
-    } catch (error) {
-      //обработка ошибки
-      throw error;
-    }
-  }
   render() {
     let tableData = [];
     if (this.state.json === null) {
-      this.getData().then(() => {
+      (async () => {
+        let data = await LoadData.getStats();
+        RealmDB.sendNewDataToBase({
+          id: 'US',
+          data: data,
+        });
+        this.setState({json: JSON.parse(data).timelineitems[0]});
         let keys = Object.keys(this.state.json);
         keys.forEach(i => {
-          let record = this.state.json[i].RUS;
-          if (record !== undefined) {
+          let record = this.state.json[i];
+          if (record !== undefined && typeof record === 'object') {
+            record.date = i;
             tableData.push(record);
           }
         });
-      });
+      })();
     }
-    // console.log(this);
     return (
       <NavigationContainer>
         <Drawer.Navigator>
           <Drawer.Screen name="main" component={mainScreenComponent} />
-          <Drawer.Screen name="Detail" initialParams={{puk}} component={Detail} />
+          <Drawer.Screen
+            name="Detail"
+            initialParams={{puk}}
+            component={Detail}
+          />
           {/*<Drawer.Screen name="Country" component={Country} />*/}
         </Drawer.Navigator>
       </NavigationContainer>
