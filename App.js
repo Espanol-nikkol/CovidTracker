@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 import React, {Component} from 'react';
-import {View, Text, Button, StyleSheet, FlatList} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
+import {View, Text, Button, StyleSheet, FlatList} from 'react-native';
 import Tracker from './components/tracker';
 import Detail from './components/detail';
 import Country from './components/country';
@@ -19,7 +19,6 @@ function mainScreenComponent(props) {
     </View>
   );
 }
-let puk = 'PUK';
 
 class App extends Component {
   state = {
@@ -51,7 +50,7 @@ class App extends Component {
         <Drawer.Navigator>
           <Drawer.Screen name="main" component={mainScreenComponent} />
           <Drawer.Screen name="Detail" component={Detail} />
-          {/*<Drawer.Screen name="Country" component={Country} />*/}
+          <Drawer.Screen name="Country" component={Country} />
         </Drawer.Navigator>
       </NavigationContainer>
     );
