@@ -8,47 +8,17 @@ import Country from './components/country';
 import LoadData from './components/loadData';
 import RealmDB from './components/realmDB';
 import {createDrawerNavigator} from '@react-navigation/drawer';
+import Main from './components/Main';
 
 const Drawer = createDrawerNavigator();
 
-function mainScreenComponent(props) {
-  return (
-    <View>
-      <Text>A</Text>
-      <Button title="Меню" onPress={() => props.navigation.openDrawer()} />
-    </View>
-  );
-}
-
 class App extends Component {
-  state = {
-    json: null,
-  };
-
   render() {
-    let tableData = [];
-    if (this.state.json === null) {
-      (async () => {
-        let data = await LoadData.getStats('US');
-        RealmDB.sendNewDataToBase({
-          id: 'US',
-          data: data,
-        });
-        this.setState({json: JSON.parse(data).timelineitems[0]});
-        let keys = Object.keys(this.state.json);
-        keys.forEach(i => {
-          let record = this.state.json[i];
-          if (record !== undefined && typeof record === 'object') {
-            record.date = i;
-            tableData.push(record);
-          }
-        });
-      })();
-    }
+    // console.log('RENDER APP');
     return (
       <NavigationContainer>
         <Drawer.Navigator>
-          <Drawer.Screen name="main" component={mainScreenComponent} />
+          <Drawer.Screen name="main" component={Main} />
           <Drawer.Screen name="Detail" component={Detail} />
           <Drawer.Screen name="Country" component={Country} />
         </Drawer.Navigator>

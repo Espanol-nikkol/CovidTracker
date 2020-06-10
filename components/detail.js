@@ -19,23 +19,26 @@ import RealmDB from './realmDB';
 class Detail extends Component {
   state = {
     json: null,
+    country: 'Please, choose country',
   };
   tableData = [];
-  render() {
-    if (this.state.json === null) {
-      RealmDB.getRecords('Data').then(res => {
-        const json = JSON.parse(res[0].data).timelineitems[0];
-        let keys = Object.keys(json);
-        keys.forEach(i => {
-          let record = json[i];
-          if (typeof record === 'object') {
-            record.date = i;
-            this.tableData.push(record);
-          }
+  componentDidMount(): void {
+    this.props.navigation.addListener('focus', () => {
+      if (RealmDB.choosenCountry) {
+        RealmDB.getCurrentData().then(res => {
+          let data = JSON.parse(res);
+          let keys = Object.keys(data.data);
+          this.tableData = (() => keys.map(i => data.data[i]))();
+          console.log(this.tableData)
+          this.setState({
+            country: data.title,
+            json: data.data,
+          });
         });
-        this.setState({json: json});
-      });
-    }
+      }
+    });
+  }
+  render() {
     return (
       <View style={style.container}>
         <ScrollView horizontal={true}>
