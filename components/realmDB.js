@@ -32,10 +32,18 @@ class RealmDB {
     day: 'numeric',
   };
 
+  static OPTION_DATEFORMAT_SHORT = {
+    year: '2-digit',
+    month: '2-digit',
+    day: '2-digit',
+  };
+
   static sendNewDataToBase = function(newData) {
     this.Realm.open(this.CONFIG).then(realm => {
       realm.write(() => {
+        console.log(this.getRecords('Data'))
         realm.create('Data', newData, 'modified');
+        console.log(this.getRecords('Data'))
         realm.create(
           'Country',
           {id: newData.id, name: Constant.ISO_TO_COUNTRY[newData.id]},
@@ -113,9 +121,7 @@ class RealmDB {
   }
 
   static async getCurrentData() {
-    console.log('getCurrentData start')
     let realm = await this.Realm.open(this.CONFIG);
-    console.log(await this.getRecords('Data'));
     return realm
       .objects('Data')
       .filter(i => i.id === Constant.COUNTRY_TO_ISO[this.choosenCountry])[0]
