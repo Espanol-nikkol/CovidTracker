@@ -1,8 +1,8 @@
-import {LineChart} from 'react-native-chart-kit';
+import {LineChart, PieChart} from 'react-native-chart-kit';
 import React, {Component} from 'react';
 import {ScrollView, Text, View} from 'react-native';
 import RealmDB from './realmDB';
-import {showMessage, hideMessage} from 'react-native-flash-message';
+import {showMessage} from 'react-native-flash-message';
 const chartConfig = {
   backgroundGradientFrom: '#1E2923',
   backgroundGradientFromOpacity: 0,
@@ -13,14 +13,10 @@ const chartConfig = {
   barPercentage: 0.5,
   useShadowColorFromDataset: false, // optional
 };
+
 class Chart extends Component {
   state = {
-    json: {
-      total_sick: [''],
-      total_deaths: [''],
-      total_cases: [''],
-      total_recoveries: [''],
-    },
+    json: {},
     country: 'Please, choose country',
     labels: [],
   };
@@ -30,10 +26,12 @@ class Chart extends Component {
         RealmDB.getCurrentData().then(res => {
           let data = JSON.parse(res);
           let keys = Object.keys(data.data);
+          let lastIndex = keys[keys.length - 1];
           let tableData = (() =>
             keys.map(i => {
               let temp = {};
             }))();
+          console.log(data.data[lastIndex])
           this.setState({
             country: data.title,
             json: {
@@ -50,6 +48,38 @@ class Chart extends Component {
               total_recoveries: keys
                 .map(i => data.data[i].total_recoveries)
                 .reverse(),
+              count: [
+                {
+                  name: 'Total sick',
+                  count: data.data[lastIndex].total_cases -
+                      data.data[lastIndex].total_deaths -
+                      data.data[lastIndex].total_recoveries,
+                  color: 'rgba(10, 103, 163, 1)',
+                  legendFontColor: 'rgba(10, 103, 163, 1)',
+                  legendFontSize: 15,
+                },
+                {
+                  name: 'Total cases',
+                  count: data.data[lastIndex].total_cases,
+                  color: 'rgba(255, 142, 0, 1)',
+                  legendFontColor: 'rgba(255, 142, 0, 1)',
+                  legendFontSize: 15,
+                },
+                {
+                  name: 'Total recoveries',
+                  count: data.data[lastIndex].total_recoveries,
+                  color: 'rgba(0, 201, 13, 1)',
+                  legendFontColor: 'rgba(0, 201, 13, 1)',
+                  legendFontSize: 15,
+                },
+                {
+                  name: 'Total deaths',
+                  count: data.data[lastIndex].total_deaths,
+                  color: 'rgba(255, 7, 0, 1)',
+                  legendFontColor: 'rgba(255, 7, 0, 1)',
+                  legendFontSize: 15,
+                },
+              ],
             },
             labels: keys
               .map(i =>
@@ -70,6 +100,16 @@ class Chart extends Component {
       return (
         <View>
           <Text>{this.state.country} </Text>
+          <PieChart
+            data={this.state.json.count}
+            width={400}
+            height={220}
+            chartConfig={chartConfig}
+            accessor="count"
+            backgroundColor="transparent"
+            paddingLeft="10"
+            absolute
+          />
           <ScrollView horizontal={true}>
             <LineChart
               data={{
