@@ -11,15 +11,14 @@ const Drawer = createDrawerNavigator();
 
 class App extends Component {
   render() {
-    // console.log('RENDER APP');
     return (
-        <NavigationContainer>
-          <Drawer.Navigator>
-            <Drawer.Screen name="main" component={Main} />
-            <Drawer.Screen name="Detail" component={Detail} />
-            <Drawer.Screen name="Country" component={Country} />
-          </Drawer.Navigator>
-        </NavigationContainer>
+      <NavigationContainer>
+        <Drawer.Navigator>
+          <Drawer.Screen name="Main" component={Main} />
+          <Drawer.Screen name="Detail" component={Detail} />
+          <Drawer.Screen name="Country" component={Country} />
+        </Drawer.Navigator>
+      </NavigationContainer>
     );
   }
 }

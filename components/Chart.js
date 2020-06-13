@@ -1,38 +1,49 @@
 import {LineChart, PieChart} from 'react-native-chart-kit';
 import React, {Component} from 'react';
-import {ScrollView, Text, View} from 'react-native';
+import {ScrollView, Text, View, Dimensions, StyleSheet} from 'react-native';
 import RealmDB from './realmDB';
-import {showMessage} from 'react-native-flash-message';
+import {showMessage, hideMessage} from 'react-native-flash-message';
 const chartConfig = {
   backgroundGradientFrom: '#1E2923',
   backgroundGradientFromOpacity: 0,
   backgroundGradientTo: '#08130D',
   backgroundGradientToOpacity: 0.5,
   color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
-  strokeWidth: 2, // optional, default 3
+  strokeWidth: 2,
   barPercentage: 0.5,
-  useShadowColorFromDataset: false, // optional
+  useShadowColorFromDataset: false,
 };
+
+const style = StyleSheet.create({
+  totalCasesText: {
+    color: 'rgba(255, 139, 0, 1)',
+    textAlign: 'center',
+  },
+})
 
 class Chart extends Component {
   state = {
-    json: {},
+    choosenCountry: undefined,
+    json: {
+      total_sick: [],
+      total_deaths: [],
+      total_cases: [],
+      total_recoveries: [],
+      count: [{name: '', count: 0}],
+    },
     country: 'Please, choose country',
     labels: [],
   };
   componentDidMount(): void {
     this.props.navigation.addListener('focus', () => {
       if (RealmDB.choosenCountry) {
+        hideMessage();
         RealmDB.getCurrentData().then(res => {
           let data = JSON.parse(res);
           let keys = Object.keys(data.data);
           let lastIndex = keys[keys.length - 1];
-          let tableData = (() =>
-            keys.map(i => {
-              let temp = {};
-            }))();
-          console.log(data.data[lastIndex])
           this.setState({
+            choosenCountry: RealmDB.choosenCountry,
             country: data.title,
             json: {
               total_sick: keys
@@ -50,33 +61,27 @@ class Chart extends Component {
                 .reverse(),
               count: [
                 {
-                  name: 'Total sick',
-                  count: data.data[lastIndex].total_cases -
-                      data.data[lastIndex].total_deaths -
-                      data.data[lastIndex].total_recoveries,
-                  color: 'rgba(10, 103, 163, 1)',
-                  legendFontColor: 'rgba(10, 103, 163, 1)',
+                  name: 'Sick',
+                  count:
+                    data.data[lastIndex].total_cases -
+                    data.data[lastIndex].total_deaths -
+                    data.data[lastIndex].total_recoveries,
+                  color: '#4A11AE',
+                  legendFontColor: '#4A11AE',
                   legendFontSize: 15,
                 },
                 {
-                  name: 'Total cases',
-                  count: data.data[lastIndex].total_cases,
-                  color: 'rgba(255, 142, 0, 1)',
-                  legendFontColor: 'rgba(255, 142, 0, 1)',
-                  legendFontSize: 15,
-                },
-                {
-                  name: 'Total recoveries',
+                  name: 'Recoveries',
                   count: data.data[lastIndex].total_recoveries,
-                  color: 'rgba(0, 201, 13, 1)',
-                  legendFontColor: 'rgba(0, 201, 13, 1)',
+                  color: '#00B64F',
+                  legendFontColor: '#00B64F',
                   legendFontSize: 15,
                 },
                 {
-                  name: 'Total deaths',
+                  name: 'Deaths',
                   count: data.data[lastIndex].total_deaths,
-                  color: 'rgba(255, 7, 0, 1)',
-                  legendFontColor: 'rgba(255, 7, 0, 1)',
+                  color: '#FF3500',
+                  legendFontColor: '#FF3500',
                   legendFontSize: 15,
                 },
               ],
@@ -96,18 +101,19 @@ class Chart extends Component {
   }
 
   render() {
-    if (RealmDB.choosenCountry) {
+    if (this.state.choosenCountry) {
       return (
         <View>
-          <Text>{this.state.country} </Text>
+          <Text style={style.totalCasesText}>
+            Total cases: {this.state.json.total_cases[0]}
+          </Text>
           <PieChart
             data={this.state.json.count}
-            width={400}
+            width={Dimensions.get('window').width}
             height={220}
             chartConfig={chartConfig}
             accessor="count"
             backgroundColor="transparent"
-            paddingLeft="10"
             absolute
           />
           <ScrollView horizontal={true}>
@@ -117,19 +123,19 @@ class Chart extends Component {
                 datasets: [
                   {
                     data: this.state.json.total_cases,
-                    color: (opacity = 1) => `rgba(255, 142, 0, ${opacity})`,
+                    color: (opacity = 1) => `rgba(255, 139, 0,${opacity})`,
                   },
                   {
                     data: this.state.json.total_deaths,
-                    color: (opacity = 1) => `rgba(255, 7, 0, ${opacity})`,
+                    color: (opacity = 1) => `rgba(255, 53, 0,${opacity})`,
                   },
                   {
                     data: this.state.json.total_recoveries,
-                    color: (opacity = 1) => `rgba(0, 201, 13, ${opacity})`,
+                    color: (opacity = 1) => `rgba(0, 182, 79,${opacity})`,
                   },
                   {
                     data: this.state.json.total_sick,
-                    color: (opacity = 1) => `rgba(10, 103, 163, ${opacity})`,
+                    color: (opacity = 1) => `rgba(74, 17, 174,${opacity})`,
                   },
                 ],
               }}
@@ -137,31 +143,30 @@ class Chart extends Component {
               height={220}
               yAxisInterval={1}
               chartConfig={{
-                backgroundColor: '#e26a00',
-                backgroundGradientFrom: '#fb8c00',
-                backgroundGradientTo: '#ffa726',
+                backgroundGradientFrom: 'rgba(175, 217, 219, 1)',
                 decimalPlaces: 0, // optional, defaults to 2dp
-                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                 style: {
                   borderRadius: 16,
                 },
                 propsForDots: {
                   r: '6',
-                  strokeWidth: '2',
-                  stroke: '#ffa726',
+                  strokeWidth: '1',
+                  stroke: '#000000',
                 },
               }}
               onDataPointClick={({value, dataset, getColor}) => {
                 let index = dataset.data.indexOf(value);
                 showMessage({
                   message: `Statistics for ${this.state.labels[index]}`,
+
                   description: `Total cases: ${
                     this.state.json.total_cases[index]
                   },
-Total deaths: ${this.state.json.total_deaths[index]},
+Total sick: ${this.state.json.total_sick[index]},
 Total recoveries: ${this.state.json.total_recoveries[index]},
-Total sick: ${this.state.json.total_sick[index]}`,
+Total deaths: ${this.state.json.total_deaths[index]}`,
                   type: 'info',
                   autoHide: false,
                 });

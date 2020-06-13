@@ -41,9 +41,7 @@ class RealmDB {
   static sendNewDataToBase = function(newData) {
     this.Realm.open(this.CONFIG).then(realm => {
       realm.write(() => {
-        console.log(this.getRecords('Data'))
         realm.create('Data', newData, 'modified');
-        console.log(this.getRecords('Data'))
         realm.create(
           'Country',
           {id: newData.id, name: Constant.ISO_TO_COUNTRY[newData.id]},
@@ -103,21 +101,30 @@ class RealmDB {
         formatData.data[date] = {};
         keys.forEach(i => {
           formatData.data[date][i] = json.timelineitems[0][oldDate][i];
-        })
+        });
         formatData.data[date].date = date;
       }
+      let currentDate = new Date();
+      formatData.download = `${currentDate.getDate()}.${currentDate.getMonth()}`;
     }
     return formatData;
   };
 
   static async setChoosenCountry(id) {
-    let countries = await this.getRecords('Country');
-    if (!countries.find(i => i.name === Constant.ISO_TO_COUNTRY[id])) {
+    this.choosenCountry = Constant.ISO_TO_COUNTRY[id];
+    let countries = await this.getRecords('Data');
+    let record;
+    record = countries.find(i => i.id === id);
+    let currentDownload = new Date();
+    if (
+      !record ||
+      JSON.parse(record.data).download !==
+        `${currentDownload.getDate()}.${currentDownload.getMonth()}`
+    ) {
       let data = await LoadData.getStats(id);
       let json = this.conversionData(id, JSON.parse(data));
       this.sendNewDataToBase({id: id, data: JSON.stringify(json)});
     }
-    this.choosenCountry = Constant.ISO_TO_COUNTRY[id];
   }
 
   static async getCurrentData() {

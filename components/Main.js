@@ -5,37 +5,30 @@ import Chart from './Chart';
 import FlashMessage from 'react-native-flash-message';
 
 class Main extends Component {
-  // state = {
-  //   json: null,
-  //   country: 'Please, choose country',
-  // };
-  // componentDidMount(): void {
-  //   this.props.navigation.addListener('focus', () => {
-  //     if (RealmDB.choosenCountry) {
-  //       RealmDB.getCurrentData().then(res => {
-  //         let data = JSON.parse(res);
-  //         let keys = Object.keys(data.data);
-  //         let tableData = (() => keys.map(i => data.data[i]))();
-  //         this.setState({
-  //           country: data.title,
-  //           json: data.data,
-  //         });
-  //       });
-  //     }
-  //   });
-  // }
+  state = {
+    choosenCountry: 'Click to choose country',
+  };
+
+  componentDidMount(): void {
+    this.props.navigation.addListener('focus', () => {
+      if (
+        this.state.choosenCountry !== RealmDB.choosenCountry &&
+        RealmDB.choosenCountry
+      ) {
+        this.setState({choosenCountry: RealmDB.choosenCountry});
+      }
+    });
+  }
 
   render() {
-    // console.log('RENDER MAIN');
     return (
       <View style={{flex: 1}}>
         <FlashMessage position="bottom" />
         <Button
-          title="Меню"
-          onPress={() => this.props.navigation.openDrawer()}
+          title={this.state.choosenCountry}
+          onPress={() => this.props.navigation.navigate('Country')}
         />
-        <Button title="Сброс" onPress={() => RealmDB.restart()} />
-        <Text>CHART</Text>
+        <Button title="Очистка базы данных" onPress={() => RealmDB.restart()} />
         <Chart navigation={this.props.navigation} />
       </View>
     );
