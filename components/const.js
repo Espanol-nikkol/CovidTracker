@@ -34,7 +34,7 @@ class Constant {
     China: 'CN',
     Colombia: 'CO',
     Congo: 'CG',
-    'Congo}, The Democratic Republic of the': 'CD',
+    'The Democratic Republic of the Congo': 'CD',
     'Costa Rica': 'CR',
     'Ivory Coast': 'CI',
     Croatia: 'HR',

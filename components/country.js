@@ -18,7 +18,9 @@ class Country extends Component {
     }))();
 
   onClickCountry = function(id, props) {
-    RealmDB.setChoosenCountry(id).then(() => props.navigation.navigate('Main'));
+    RealmDB.setChoosenCountry(id).then(() => {
+      props.navigation.navigate('Main');
+    });
   };
 
   searchFilterFunction = text => {

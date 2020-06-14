@@ -19,7 +19,12 @@ const style = StyleSheet.create({
     color: 'rgba(255, 139, 0, 1)',
     textAlign: 'center',
   },
-})
+  undefindedText: {
+    textAlign: 'center',
+    fontSize: 30,
+    marginTop: 10,
+  },
+});
 
 class Chart extends Component {
   state = {
@@ -37,12 +42,13 @@ class Chart extends Component {
   componentDidMount(): void {
     this.props.navigation.addListener('focus', () => {
       if (RealmDB.choosenCountry) {
-        hideMessage();
+        this.setState({loading: true});
         RealmDB.getCurrentData().then(res => {
           let data = JSON.parse(res);
           let keys = Object.keys(data.data);
           let lastIndex = keys[keys.length - 1];
-          this.setState({
+          RealmDB.isDownloading = false;
+          let newState = {
             choosenCountry: RealmDB.choosenCountry,
             country: data.title,
             json: {
@@ -94,10 +100,12 @@ class Chart extends Component {
                 ),
               )
               .reverse(),
-          });
+          };
+          this.setState(newState);
         });
       }
     });
+    this.props.navigation.addListener('blur', () => hideMessage());
   }
 
   render() {
@@ -181,7 +189,7 @@ Total deaths: ${this.state.json.total_deaths[index]}`,
         </View>
       );
     } else {
-      return <Text>{this.state.country} </Text>;
+      return <Text style={style.undefindedText}>Please, choose country</Text>;
     }
   }
 }
