@@ -1,5 +1,3 @@
-import Constant from './const';
-
 class LoadData {
   static url = 'https://thevirustracker.com/free-api?countryTimeline=';
   static requestOptions = {
@@ -16,9 +14,7 @@ class LoadData {
     } else {
       response = await fetch(this.url + country, this.requestOptions);
     }
-    // console.log(response)
     let text = await response.text();
-    // console.log(text)
     return text;
   }
 }

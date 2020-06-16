@@ -1,20 +1,6 @@
 import React, {Component} from 'react';
-import {
-  View,
-  Text,
-  Button,
-  StyleSheet,
-  FlatList,
-  ScrollView,
-  TouchableOpacity,
-} from 'react-native';
-import {
-  Table,
-  TableWrapper,
-  Row,
-  Rows,
-  Col,
-} from 'react-native-table-component';
+import {View, StyleSheet, ScrollView, TouchableOpacity} from 'react-native';
+import {Table, Row} from 'react-native-table-component';
 import RealmDB from './realmDB';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
