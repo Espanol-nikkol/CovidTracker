@@ -5,37 +5,12 @@ import Chart from './Chart';
 import FlashMessage from 'react-native-flash-message';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const style = StyleSheet.create({
-  container: {
-    alignSelf: 'flex-end',
-    position: 'absolute',
-    bottom: 20,
-    right: 20,
-    backgroundColor: 'transparent',
-  },
-  myButton: {
-    paddingTop: 16,
-    paddingLeft: 15,
-    height: 60,
-    width: 60,
-    borderRadius: 120,
-    backgroundColor: 'rgb(33,150,243)',
-  },
-});
-
 function RoundBtn(props) {
   return (
     <TouchableOpacity
-      style={style.container}
+      style={style.myButton}
       onPress={() => props.props.navigation.navigate('Detail')}>
-      <View style={style.myButton} onPress>
-        <Icon
-          name="th-list"
-          style={style.btnDetail}
-          size={30}
-          color="rgb(196,234,235)"
-        />
-      </View>
+      <Icon name="th-list" size={30} color="rgb(196,234,235)" />
     </TouchableOpacity>
   );
 }
@@ -58,14 +33,12 @@ class Main extends Component {
 
   render() {
     return (
-      <View style={{flex: 1}}>
+      <View style={style.screenMain}>
         <FlashMessage position="bottom" />
         <Button
           title={this.state.choosenCountry}
           onPress={() => this.props.navigation.navigate('Country')}
-          style={style.btnCountry}
         />
-
         {/*<Button title="Очистка базы данных" onPress={() => RealmDB.restart()} />*/}
         <Chart navigation={this.props.navigation} />
         <RoundBtn props={this.props} />
@@ -73,5 +46,21 @@ class Main extends Component {
     );
   }
 }
+
+const style = StyleSheet.create({
+  myButton: {
+    alignSelf: 'flex-end',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    height: 60,
+    width: 60,
+    borderRadius: 120,
+    backgroundColor: 'rgb(13,130,223)',
+  },
+  screenMain: {flex: 1},
+});
 
 export default Main;

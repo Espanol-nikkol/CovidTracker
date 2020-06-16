@@ -26,7 +26,8 @@
     "react-native-search-bar": "^3.5.1",
     "react-native-svg": "^12.1.0",
     "react-native-table-component": "^1.2.1",
-    "realm": "^6.0.2"
+    "realm": "^6.0.2",
+    "uplot": "^1.0.11"
   },
   "devDependencies": {
     "@babel/core": "^7.6.2",

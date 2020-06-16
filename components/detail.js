@@ -6,6 +6,7 @@ import {
   StyleSheet,
   FlatList,
   ScrollView,
+  TouchableOpacity,
 } from 'react-native';
 import {
   Table,
@@ -15,11 +16,21 @@ import {
   Col,
 } from 'react-native-table-component';
 import RealmDB from './realmDB';
+import Icon from 'react-native-vector-icons/FontAwesome';
+
+function RoundBtn(props) {
+  return (
+    <TouchableOpacity
+      style={style.myButton}
+      onPress={() => props.props.navigation.navigate('Main')}>
+      <Icon name="reply" size={30} color="rgb(196,234,235)" />
+    </TouchableOpacity>
+  );
+}
 
 class Detail extends Component {
   state = {
     json: null,
-    country: 'Please, choose country',
   };
   tableData = [];
   componentDidMount(): void {
@@ -29,7 +40,6 @@ class Detail extends Component {
           let data = JSON.parse(res);
           let keys = Object.keys(data.data);
           this.tableData = (() => keys.map(i => data.data[i]))();
-          console.log(this.tableData)
           this.setState({
             country: data.title,
             json: data.data,
@@ -54,7 +64,6 @@ class Detail extends Component {
             <ScrollView style={style.dataWrapper}>
               <Table borderStyle={{borderWidth: 1, borderColor: '#C1C0B9'}}>
                 {this.tableData.reverse().map((rowData, index) => {
-                  // console.log(rowData);
                   return (
                     <Row
                       key={index}
@@ -76,6 +85,7 @@ class Detail extends Component {
             </ScrollView>
           </View>
         </ScrollView>
+        <RoundBtn props={this.props} />
       </View>
     );
   }
@@ -87,6 +97,25 @@ const style = StyleSheet.create({
   text: {textAlign: 'center', fontWeight: '100'},
   dataWrapper: {marginTop: -1},
   row: {height: 40, backgroundColor: '#E7E6E1'},
+  containerBtn: {
+    alignSelf: 'flex-end',
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    backgroundColor: 'transparent',
+  },
+  myButton: {
+    alignSelf: 'flex-end',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
+    height: 60,
+    width: 60,
+    borderRadius: 120,
+    backgroundColor: 'rgb(33,150,243)',
+  },
 });
 
 export default Detail;

@@ -3,32 +3,9 @@ import React, {Component} from 'react';
 import {ScrollView, Text, View, Dimensions, StyleSheet} from 'react-native';
 import RealmDB from './realmDB';
 import {showMessage, hideMessage} from 'react-native-flash-message';
-const chartConfig = {
-  backgroundGradientFrom: '#1E2923',
-  backgroundGradientFromOpacity: 0,
-  backgroundGradientTo: '#08130D',
-  backgroundGradientToOpacity: 0.5,
-  color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
-  strokeWidth: 2,
-  barPercentage: 0.5,
-  useShadowColorFromDataset: false,
-};
-
-const style = StyleSheet.create({
-  totalCasesText: {
-    color: 'rgba(255, 139, 0, 1)',
-    textAlign: 'center',
-  },
-  undefindedText: {
-    textAlign: 'center',
-    fontSize: 30,
-    marginTop: 10,
-  },
-});
 
 class Chart extends Component {
   state = {
-    choosenCountry: undefined,
     json: {
       total_sick: [],
       total_deaths: [],
@@ -42,7 +19,6 @@ class Chart extends Component {
   componentDidMount(): void {
     this.props.navigation.addListener('focus', () => {
       if (RealmDB.choosenCountry) {
-        this.setState({loading: true});
         RealmDB.getCurrentData().then(res => {
           let data = JSON.parse(res);
           let keys = Object.keys(data.data);
@@ -119,7 +95,9 @@ class Chart extends Component {
             data={this.state.json.count}
             width={Dimensions.get('window').width}
             height={220}
-            chartConfig={chartConfig}
+            chartConfig={{
+              color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+            }}
             accessor="count"
             backgroundColor="transparent"
             absolute
@@ -147,16 +125,16 @@ class Chart extends Component {
                   },
                 ],
               }}
+              withShadow={false}
               width={this.state.labels.length * 70}
               height={220}
               yAxisInterval={1}
               chartConfig={{
                 backgroundGradientFrom: 'rgba(175, 217, 219, 1)',
-                decimalPlaces: 0, // optional, defaults to 2dp
+                decimalPlaces: 0,
                 color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                 style: {
-                  borderRadius: 16,
+                  borderRadius: 25,
                 },
                 propsForDots: {
                   r: '6',
@@ -164,7 +142,7 @@ class Chart extends Component {
                   stroke: '#000000',
                 },
               }}
-              onDataPointClick={({value, dataset, getColor}) => {
+              onDataPointClick={({value, dataset}) => {
                 let index = dataset.data.indexOf(value);
                 showMessage({
                   message: `Statistics for ${this.state.labels[index]}`,
@@ -177,13 +155,12 @@ Total recoveries: ${this.state.json.total_recoveries[index]},
 Total deaths: ${this.state.json.total_deaths[index]}`,
                   type: 'info',
                   autoHide: false,
+                  textStyle: {letterSpacing: 1, color: '#000000'},
+                  titleStyle: {color: '#000000', fontSize: 19},
                 });
               }}
               bezier
-              style={{
-                marginVertical: 8,
-                borderRadius: 16,
-              }}
+              style={style.lineChart}
             />
           </ScrollView>
         </View>
@@ -193,5 +170,24 @@ Total deaths: ${this.state.json.total_deaths[index]}`,
     }
   }
 }
+
+const style = StyleSheet.create({
+  totalCasesText: {
+    color: 'rgba(255, 139, 0, 1)',
+    textAlign: 'center',
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginTop: 5,
+  },
+  undefindedText: {
+    textAlign: 'center',
+    fontSize: 30,
+    marginTop: 10,
+  },
+  lineChart: {
+    marginVertical: 8,
+    borderRadius: 16,
+  },
+});
 
 export default Chart;
