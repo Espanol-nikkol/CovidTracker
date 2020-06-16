@@ -14,7 +14,8 @@ This project was created as part of the Mobile Development course with React Nat
 * https://thevirustracker.com/
 
 ## Installations:
-```git clone git@github.com:Espanol-nikkol/CovidTracker.git
+```
+git clone git@github.com:Espanol-nikkol/CovidTracker.git
 cd CovidTracker
 npm install
 npx react-native run-android
