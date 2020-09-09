@@ -20,3 +20,5 @@ cd CovidTracker
 npm install
 npx react-native run-android
 ```
+
+Statistics for Primorsky Krai are not updated
